@@ -37,20 +37,46 @@ def is_over(nums)
   return result
 end
 
-# 勝敗判定
-def check_winner
-  result = "user"
-  user_num = @user.inject(:+)
-  dealer_num = @dealer.inject(:+)
-  if user_num < dealer_num
-    result = "dealer"
-  elsif user_num == dealer_num
-    result = "draw"
+def is_over_seventeen()
+  result = false
+  if @dealer.inject(:+) >= 17
+    result = true
   end
   return result
 end
 
-puts "start game!"
+# 勝敗判定
+def check_winner
+  puts "====================="
+  puts "ディーラーの2枚目のカード：#{@already[3]}"
+  puts "ディーラーのカードの合計：#{@dealer.inject(:+)}"
+  while !is_over_seventeen()
+    card = pickup_card()
+    @dealer << card[:num]
+    @already << card[:card]
+    puts "ディーラーの引いたカード：#{card[:card]}"
+    puts "ディーラーのカードの合計：#{@dealer.inject(:+)}"
+  end
+  if is_over(@dealer)
+    puts "あなたの勝ち"
+  else
+    puts "あなた：#{@user.inject(:+)}"
+    puts "ディーラー：#{@dealer.inject(:+)}"
+    user_num = @user.inject(:+)
+    dealer_num = @dealer.inject(:+)
+    if user_num > dealer_num
+      puts "あなたの勝ちです"
+    elsif user_num < dealer_num
+      puts "ディーラーの勝ちです"
+    else user_num == dealer_num
+      puts "引き分けです"
+    end
+  end
+end
+
+puts "====================="
+puts "ゲーム開始"
+puts "====================="
 
 # カード配布
 count = 1
@@ -69,6 +95,8 @@ count = 1
   count += 1
 end
 
+puts ""
+puts "ディーラーのカード：#{@already[1]}"
 puts "あなたのカードの合計：#{@user.inject(:+)}"
 puts "------------------------"
 puts "カードを引きますか？ Y/N"
@@ -79,26 +107,20 @@ while input == "Y"
   card = pickup_card()
   @already << card[:card]
   @user << card[:num]
-  puts "あなたの引いたカードは#{card[:card]}です"
+  puts ""
+  puts "ディーラーのカード：#{@already[1]}"
+  puts "あなたの引いたカード：#{card[:card]}"
+  puts "あなたのカードの合計：#{@user.inject(:+)}"
   if is_over(@user)
+    puts "あなたの負け"
     break;
   end
-  puts "あなたのカードの合計：#{@user.inject(:+)}"
   puts "------------------------"
   puts "カードを引きますか？ Y/N"
   puts "------------------------"
   input = gets.chomp
 end
 
-# 勝敗判定
-puts "ディーラーの2枚目のカード：#{@already[3]}"
-puts "あなた：#{@user.inject(:+)}"
-puts "ディーラー：#{@dealer.inject(:+)}"
-case check_winner()
-when "user"
-  puts "あなたの勝ちです"
-when "dealer"
-  puts "ディーラーの勝ちです"
-else
-  puts "引き分けです"
+if input == "N"
+  check_winner()
 end
